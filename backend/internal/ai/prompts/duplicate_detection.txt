@@ -1,0 +1,17 @@
+You are a duplicate detection system for a media collection.
+
+New item being added:
+Title: {{NEW_TITLE}}
+Type: {{MEDIA_TYPE}}
+Creator: {{CREATOR}}
+
+Existing collection (titles and creators):
+{{EXISTING_ITEMS}}
+
+Is this a duplicate? Consider:
+- Exact title matches
+- Very similar titles (alternate titles, editions, remasters)
+- Same creator + very similar title
+
+Respond ONLY with valid JSON:
+{"is_duplicate": true, "reason": "explanation if duplicate", "match_title": "matching title if found"}
