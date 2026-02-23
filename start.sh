@@ -23,7 +23,7 @@ wait_for_port() {
   timeout=60
   elapsed=0
   echo "Waiting for $name on :$port ..."
-  while ! nc -z 127.0.0.1 "$port" 2>/dev/null; do
+  while ! nc -w1 127.0.0.1 "$port" </dev/null >/dev/null 2>&1; do
     elapsed=$((elapsed + 1))
     if [ "$elapsed" -ge "$timeout" ]; then
       echo "ERROR: $name failed to start on :$port after ${timeout}s" >&2
