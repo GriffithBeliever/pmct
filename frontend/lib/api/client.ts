@@ -1,4 +1,9 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ''
+// Server-side (RSC/SSR): needs an absolute URL — call Go directly inside the container.
+// Client-side (browser): relative URL, nginx routes /api/* to Go.
+const API_URL =
+  typeof window === 'undefined'
+    ? (process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8081')
+    : (process.env.NEXT_PUBLIC_API_URL ?? '')
 
 export class APIError extends Error {
   constructor(
