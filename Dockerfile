@@ -16,7 +16,7 @@ RUN mkdir -p public && npm run build
 
 # ---- Stage 3: Runtime ----
 FROM node:20-alpine
-RUN apk add --no-cache ca-certificates tzdata nginx
+RUN apk add --no-cache ca-certificates tzdata nginx gettext
 
 WORKDIR /app
 
