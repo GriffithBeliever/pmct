@@ -12,7 +12,7 @@ GO_PID=$!
 echo "Go backend starting (pid $GO_PID) on :8081"
 
 # Start Next.js on internal port 3000
-PORT=3000 node ./frontend/server.js &
+HOSTNAME=0.0.0.0 PORT=3000 node ./frontend/server.js &
 NEXT_PID=$!
 echo "Next.js starting (pid $NEXT_PID) on :3000"
 
