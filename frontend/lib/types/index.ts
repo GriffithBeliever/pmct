@@ -70,3 +70,19 @@ export interface AuthResponse {
   user: User
   token: string
 }
+
+export type ActivityEventType =
+  | 'item_added'
+  | 'item_updated'
+  | 'item_deleted'
+  | 'status_changed'
+  | 'rating_updated'
+
+export interface ActivityEvent {
+  id: string
+  user_id: string
+  media_item_id?: string
+  event_type: ActivityEventType
+  payload: Record<string, unknown>
+  created_at: string
+}
