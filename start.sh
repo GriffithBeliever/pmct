@@ -1,25 +1,41 @@
 #!/bin/sh
 set -e
 
-# Railway injects PORT for the public-facing port; nginx listens on it.
-# Go runs on 8081 and Next.js on 3000 internally.
 NGINX_PORT="${PORT:-8080}"
 
-# Render nginx config with the correct port
 export NGINX_PORT
 envsubst '${NGINX_PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 # Start Go backend on internal port 8081
 PORT=8081 ./server &
-echo "Go backend started on :8081"
+GO_PID=$!
+echo "Go backend starting (pid $GO_PID) on :8081"
 
 # Start Next.js on internal port 3000
 PORT=3000 node ./frontend/server.js &
-echo "Next.js started on :3000"
+NEXT_PID=$!
+echo "Next.js starting (pid $NEXT_PID) on :3000"
 
-# Give services a moment to bind
-sleep 2
+# Wait for a port to accept connections (timeout in seconds)
+wait_for_port() {
+  port=$1
+  name=$2
+  timeout=60
+  elapsed=0
+  echo "Waiting for $name on :$port ..."
+  while ! nc -z 127.0.0.1 "$port" 2>/dev/null; do
+    elapsed=$((elapsed + 1))
+    if [ "$elapsed" -ge "$timeout" ]; then
+      echo "ERROR: $name failed to start on :$port after ${timeout}s" >&2
+      exit 1
+    fi
+    sleep 1
+  done
+  echo "$name ready on :$port"
+}
 
-# Run nginx in the foreground (keeps the container alive)
-echo "nginx listening on :${NGINX_PORT}"
+wait_for_port 8081 "Go backend"
+wait_for_port 3000 "Next.js"
+
+echo "All services ready — nginx listening on :${NGINX_PORT}"
 exec nginx -g "daemon off;"
